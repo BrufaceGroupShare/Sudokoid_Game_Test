@@ -14,7 +14,8 @@ import com.mydevnull.sudokoid.Sudokoid;
 public class GameTest extends android.test.ActivityUnitTestCase<Game>{
 
 	private Game TestActivity;
-	
+	public int used[][]= new int[9][9];
+	public int puzzle[];
 	public GameTest() {
 		super(Game.class);		
 	}
@@ -31,7 +32,7 @@ public class GameTest extends android.test.ActivityUnitTestCase<Game>{
 				 * This pattern hold all values of all 9x9 tiles/cells in the game board in a
 				 * two dimensional array "usedtest"
 				*/
-				final int used[][] = new int[9][9];
+				//used[][] = new int[8][8];
 				//Assign values to pattern
 				//This is done manually for 36 tiles and follow the easy level puzzle pattern
 				//as bellow
@@ -160,8 +161,7 @@ public class GameTest extends android.test.ActivityUnitTestCase<Game>{
 			    final int DIFFICULTY_MEDIUM = 1;
 			    final int DIFFICULTY_HARD   = 2;
 
-			    int puzzle[];
-
+		    
 			    PuzzleView puzzleView;
 
 			    final String PREF_PUZZLE = "puzzle";
@@ -304,9 +304,120 @@ public class GameTest extends android.test.ActivityUnitTestCase<Game>{
 	 */
 	@Test
 	public void testcalculateUsedTilesInPosition_test1(){
-			
+		//As formed on the grid we had cell(1,2) = 6
+		int x = 1, y = 2;
+		// Give the output values array from the function itself
+		int returnedarray[] = new int[81];
+		// Obtain the output array by execute the function
+		returnedarray = TestActivity.calculateUsedTilesInPosition(x, y);
+		//Check the cell at coordinate of (1,2) contains value of 6
+		assertEquals(returnedarray[3], 6);
+	}
+	//getPuzzle(int) test series
+	
+		/*Function of the function:
+		 *The out put of grid pattern will be generated as corresponding to the
+		 *input passed integer values
+		 * 
+		 */
 		
+		/*
+		 * Test strategy:
+		 * As defined in the game, every level Hard, Medium, Easy is refered to an
+		 * Integer number EASY (0), MEDIUM(1), HARD(2).
+		 * The solution is use the chosen pattern at setup phase, Easy on.
+		 * Feed the value of 0 and scan the output to see if it completely equal to
+		 * the one we had at the beginning.
+		 */
+	@Test
+	public void testgetPuzzle_test1(){
+		//Create an array to store the grid array 
+		int returnedarray[] = new int[81];
+		//Create the passing argument of game level.
+		int level = 0;// 0 means EASY level in the game
+		//Collect the generated grid
+		returnedarray = TestActivity.getPuzzle(level);
+		//Declare the flag variable in comparison between two matrix, any mismatched
+		//value will cause the flag to false and break the loop
+		boolean flag = true;
+		//Expeted the result will be completely match with true
+		boolean expetedresult = true; // After scanning if notthing wrong happen, we
+		//had completely match
+		
+		//Change the defined pattern form 2D to 1D
+		int used1D[] = new int[81];
+		int k = 0;
+		for (int i = 0 ; i < 9; i++){
+			for (int j = 0; j< 9; j++){
+				used1D[k++] = used[i][j];
+			}
+		}
+		
+		//Process of comparison the two array
+		for(int i = 0; i<returnedarray.length;i++){
+			if (used1D[i] != returnedarray[i]){
+					flag = false;
+					break;
+			}
+		}
+		assertEquals(expetedresult, flag);
 	}
 	
-
+	
+	//getTile(int  x, int y) test series
+	
+			/*Function of the function:
+			 * Adapt the computation coordinate of the grid in 2D to the position
+			 * in the 1D puzzle array with the size of 9 by 9
+			 * Value is delivered out by this method of translation
+			 */
+			
+			/*
+			 * Test strategy:
+			 * Give a coordinate of a cell in the grid and compare it with exact location
+			 * of it in a puzzle
+			 *Eg: For the (5,2) it must be 4
+			 */
+	@Test
+	public void testgetTile_test1(){
+		//Feed the coordinate in 2D
+		int x = 5, y = 2;
+		//Get the corresponding value in 1D array 
+		int returnedvalue = TestActivity.getTile(x,y);
+		//The expected value as we known equal to 4
+		int expectedvalue = 4;
+		
+		assertEquals(returnedvalue, expectedvalue);
+	}
+	
+	//setTile(int  x, int y, int value) test series
+	
+	/*Function of the function:
+	 * Adapt the computation coordinate of the grid in 2D to the position
+	 * in the 1D puzzle array with the size of 9 by 9
+	 * When a value with it coordinate is passed, it will placed into 1D array
+	 */
+	
+	/*
+	 * Test strategy:
+	 * Give a coordinate of a cell in the grid and compare it with exact location
+	 * of it in a puzzle of value zero (the one that need to replace by a new appropriate value)
+	 *Eg: For the (5,1) now is 0 and new validated value is 4
+	 *the value at position of puzzle[14] must = 4
+	 */
+	@Test
+	public void testsetTile_test1(){
+		//Give the coordinate and new value for the cell at (x,y)
+		int x = 5, y = 1, value = 4;
+		//Set the value to the cell by calling the function the output is stored in 
+		//the returned value
+		TestActivity.setTile(x,y,value);
+		//Returned value = the lolcation of puzzle[14], before adding 4 it was 0
+		int returnedvalue = puzzle[14];
+		//Expected new value is the value;
+		int expectedvalue = value;
+		
+		assertEquals(returnedvalue, expectedvalue);
+		
+	}
 }
